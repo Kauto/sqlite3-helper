@@ -1,0 +1,37 @@
+{
+  "name": "sqlite3-helper",
+  "version": "1.0.0",
+  "description": "A wrapper library that eases the work with sqlite3 with some new functions and promises",
+  "main": "src/database.js",
+  "scripts": {
+    "test": "NODE_ENV=test ./node_modules/mocha/bin/_mocha --ui bdd --recursive ./test"
+  },
+  "author": "Markus Madeja",
+  "repository": "Kauto/sqlite-helper",
+  "license": "MIT",
+  "keywords": [
+    "sqlite3",
+    "sqlite",
+    "sql",
+    "database",
+    "save",
+    "custom",
+    "helper"
+  ],
+  "dependencies": {
+    "app-root-path": "^2.1.0",
+    "await-lock": "^1.1.3",
+    "mkdirp": "^0.5.1",
+    "sqlite3": "^4.0.2"
+  },
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "eslint": "^5.2.0",
+    "eslint-config-standard": "^11.0.0",
+    "eslint-plugin-import": "^2.13.0",
+    "eslint-plugin-node": "^7.0.1",
+    "eslint-plugin-promise": "^3.8.0",
+    "eslint-plugin-standard": "^3.1.0",
+    "mocha": "^5.2.0"
+  }
+}
