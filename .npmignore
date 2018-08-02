@@ -1,0 +1,14 @@
+# dependencies
+node_modules
+
+# logs
+npm-debug.log
+
+# Saved data
+data/
+
+# tests
+test/
+
+# eslint
+.eslintrc.js
