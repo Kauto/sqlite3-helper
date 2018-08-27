@@ -23,6 +23,14 @@ const DB = require('sqlite3-helper');
 })()
 ```
 
+If you work with a node version < 10 (having no support for `function *` generator functions) use `sqlite3-helper/no-generators` instead:
+
+```js
+const DB = require('sqlite3-helper/no-generators');
+
+// ...
+```
+
 To setup your database, create a `sql`-file named `001-init.sql` in a `migrations`-directory in the root-directory of your program.
 ##### ~/migrations/001-init.sql
 ```sql
