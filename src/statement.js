@@ -62,33 +62,6 @@ class Statement {
       })
     })
   }
-
-  async * iterate (...params) {
-    let rows = []
-    let loop = true
-    let resolveCallback = () => {}
-    this.orgStatement.each(...params, (err, row) => {
-      if (err) {
-        throw new Error(err)
-      }
-      rows.push(row)
-      resolveCallback()
-    }, () => {
-      loop = false
-      resolveCallback()
-    })
-
-    // eslint-disable-next-line no-unmodified-loop-condition
-    while (loop) {
-      if (!rows.length) {
-        await (new Promise(resolve => (resolveCallback = resolve)))
-        resolveCallback = () => {}
-      }
-      if (rows.length) {
-        yield rows.shift()
-      }
-    }
-  }
 }
 
 module.exports = Statement
