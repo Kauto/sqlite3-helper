@@ -23,14 +23,6 @@ const DB = require('sqlite3-helper');
 })()
 ```
 
-If you work with a node version < 10 (having no support for `function *` generator functions) use `sqlite3-helper/no-generators` instead:
-
-```js
-const DB = require('sqlite3-helper/no-generators');
-
-// ...
-```
-
 To setup your database, create a `sql`-file named `001-init.sql` in a `migrations`-directory in the root-directory of your program.
 ##### ~/migrations/001-init.sql
 ```sql
@@ -46,6 +38,16 @@ CREATE TABLE `users` (
 DROP TABLE IF EXISTS `users`;
 ```
 And that's it!
+
+## Node version < 10
+
+If you work with a node version < 10 (having no support for `async function *` async generator functions) use `sqlite3-helper/no-generators` instead:
+
+```js
+const DB = require('sqlite3-helper/no-generators');
+
+// ...
+```
 
 ## One global instance
 A normal, simple application is mostly working with only one database. To make the class managment more easy, this library does the access-control for you - mainly as a singleton. (But you can create a new instance to access other databases.)
