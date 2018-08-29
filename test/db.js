@@ -1,6 +1,6 @@
 const {describe, it, afterEach} = require('mocha')
 const {expect} = require('chai')
-const DB = require('../src/database')
+const DB = require('../src/generators')
 const fs = require('fs')
 const path = require('path')
 const appRoot = require('app-root-path').path
