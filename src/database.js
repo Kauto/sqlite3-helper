@@ -72,16 +72,8 @@ DB.prototype.exec = async function (source) {
   }))
 }
 
-DB.prototype.pragma = function (source, simplify = false) {
-  return this.connection().pragma(source, simplify)
-}
-
-DB.prototype.checkpoint = function (databaseName) {
-  return this.connection().checkpoint(databaseName)
-}
-
-DB.prototype.register = function (...args) {
-  return this.connection().register(...args)
+DB.prototype.loadExtension = function (...args) {
+  return this.connection().loadExtension(...args)
 }
 
 DB.prototype.close = async function () {
@@ -416,7 +408,7 @@ function createInsertOrReplaceStatement (insertOrReplace, table, data, whiteList
 
   let sql = data.reduce((sql, rowData, index) => {
     fields.forEach(field => parameter.push(rowData[field]))
-    return sql + (index ? ',' : '') + '(' + Array.from({length: fields.length}, () => '?').join(',') + ')'
+    return sql + (index ? ',' : '') + '(' + Array.from({ length: fields.length }, () => '?').join(',') + ')'
   }, `${insertOrReplace} INTO \`${table}\` (\`${fields.join('`,`')}\`) VALUES `)
   return [sql, ...parameter]
 }
