@@ -59,7 +59,7 @@ DB.prototype.connection = async function () {
 DB.prototype.prepare = async function (sql, ...params) {
   const db = await this.connection()
   return new Promise((resolve, reject) => {
-    let orgStatement = db.prepare(sql, ...params, (err) => {
+    const orgStatement = db.prepare(sql, ...params, (err) => {
       err ? reject(err) : resolve(new Statement(orgStatement))
     })
   })
@@ -80,6 +80,7 @@ DB.prototype.close = async function () {
   if (this.db) {
     const databaseToClose = this.db
     this.db = undefined
+    if (this === instance) instance = null
     return new Promise((resolve, reject) => {
       function tryToClose (tries) {
         databaseToClose.close((err) => {
@@ -219,7 +220,7 @@ DB.prototype.each = async function (query, ...bindParameters) {
  * @returns {array}
  */
 DB.prototype.queryColumn = async function (column, query, ...bindParameters) {
-  let result = []
+  const result = []
   await this.each(query, ...bindParameters, row => {
     result[result.length] = row[column]
   })
@@ -236,7 +237,7 @@ DB.prototype.queryColumn = async function (column, query, ...bindParameters) {
  * @returns {object}
  */
 DB.prototype.queryKeyAndColumn = async function (key, column, query, ...bindParameters) {
-  let result = {}
+  const result = {}
   await this.each(query, ...bindParameters, row => {
     result[row[key]] = row[column]
   })
@@ -268,8 +269,8 @@ DB.prototype.update = async function (table, data, where, whiteList) {
   let parameter = []
 
   // Build data part of the query
-  let setStringBuilder = []
-  for (let keyOfData in data) {
+  const setStringBuilder = []
+  for (const keyOfData in data) {
     const value = data[keyOfData]
     // don't set undefined and only values in an optional whitelist
     if (value !== undefined && (!whiteList || whiteList.includes(keyOfData))) {
@@ -286,12 +287,12 @@ DB.prototype.update = async function (table, data, where, whiteList) {
   // Build where part of query
   sql += ' WHERE '
   if (Array.isArray(where)) {
-    let [whereTerm, ...whereParameter] = where
+    const [whereTerm, ...whereParameter] = where
     sql += whereTerm
     parameter = [...parameter, ...whereParameter]
   } else if (typeof where === 'object') {
-    let whereStringBuilder = []
-    for (let keyOfWhere in where) {
+    const whereStringBuilder = []
+    for (const keyOfWhere in where) {
       const value = where[keyOfWhere]
       if (value !== undefined) {
         parameter.push(value)
@@ -404,9 +405,9 @@ function createInsertOrReplaceStatement (insertOrReplace, table, data, whiteList
   }
 
   // Build start of where query
-  let parameter = []
+  const parameter = []
 
-  let sql = data.reduce((sql, rowData, index) => {
+  const sql = data.reduce((sql, rowData, index) => {
     fields.forEach(field => parameter.push(rowData[field]))
     return sql + (index ? ',' : '') + '(' + Array.from({ length: fields.length }, () => '?').join(',') + ')'
   }, `${insertOrReplace} INTO \`${table}\` (\`${fields.join('`,`')}\`) VALUES `)
@@ -441,7 +442,7 @@ DB.prototype.migrate = async function ({ force, table = 'migrations', migrations
   //   { id: 2, name: 'feature', fielname: '002-feature.sql', up: ..., down: ... }
   migrations.map(migration => {
     const filename = path.join(location, migration.filename)
-    let data = fs.readFileSync(filename, 'utf-8')
+    const data = fs.readFileSync(filename, 'utf-8')
     const [up, down] = data.split(/^--\s+?down\b/mi)
     if (!down) {
       const message = `The ${migration.filename} file does not contain '-- Down' separator.`
