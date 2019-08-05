@@ -21,4 +21,6 @@ declare module 'sqlite3-helper' {
     }
 }
 
+import { DBOptions, DBInstance } from 'sqlite3-helper'
+
 export default function DB(options?: DBOptions): DBInstance
