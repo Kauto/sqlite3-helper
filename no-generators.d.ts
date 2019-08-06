@@ -1,6 +1,6 @@
-declare module 'sqlite3-helper' {
+import sqlite3 from 'sqlite3'
 
-    import sqlite3 = require('sqlite3')
+declare module 'sqlite3-helper' {
 
     type MigrationOptions = {
         /** Whether to set to 'last' to automatically reapply the last migration-file. Default: false */
@@ -256,5 +256,7 @@ declare module 'sqlite3-helper' {
     }
 
 }
+
+import { DBOptions, DBInstance } from 'sqlite3-helper'
 
 export default function DB(options?: DBOptions): DBInstance
