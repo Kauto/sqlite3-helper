@@ -36,13 +36,15 @@ DB.prototype.connection = async function () {
     return this.db
   }
   try {
-    if (this.options.fileMustExist && !fs.existsSync(this.options.path)) {
-      throw new Error("DB file doesn't exist: " + path.resolve(this.options.path))
+    if (!this.options.memory) {
+      if (this.options.fileMustExist && !fs.existsSync(this.options.path)) {
+        throw new Error("DB file doesn't exist: " + path.resolve(this.options.path))
+      }
+      // create path if it doesn't exists
+      mkdirp.sync(path.dirname(this.options.path))
     }
-    // create path if it doesn't exists
-    mkdirp.sync(path.dirname(this.options.path))
     this.db = await new Promise((resolve, reject) => {
-      const db = new sqlite3.Database(this.options.path, (err) => err ? reject(err) : resolve(db))
+      const db = new sqlite3.Database(this.options.memory ? ':memory:' : this.options.path, (err) => err ? reject(err) : resolve(db))
     })
   } catch (e) {
     this.db = undefined
