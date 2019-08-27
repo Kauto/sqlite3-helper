@@ -36,24 +36,34 @@ DB.prototype.connection = async function () {
     return this.db
   }
   try {
-    // create path if it doesn't exists
-    mkdirp.sync(path.dirname(this.options.path))
+    if (!this.options.memory) {
+      if (this.options.fileMustExist && !fs.existsSync(this.options.path)) {
+        throw new Error("DB file doesn't exist: " + path.resolve(this.options.path))
+      }
+      // create path if it doesn't exists
+      mkdirp.sync(path.dirname(this.options.path))
+    }
     this.db = await new Promise((resolve, reject) => {
-      const db = new sqlite3.Database(this.options.path, (err) => err ? reject(err) : resolve(db))
+      const db = new sqlite3.Database(
+        this.options.memory ? ':memory:' : this.options.path,
+        this.options.readonly ? sqlite3.OPEN_READONLY : sqlite3.OPEN_READWRITE,
+        (err) => err ? reject(err) : resolve(db))
     })
+
+    if (this.options.WAL) {
+      await new Promise((resolve, reject) => this.db.exec('PRAGMA journal_mode = WAL', (err) => err ? reject(err) : resolve()))
+    }
+    if (this.options.migrate) {
+      await this.migrate(typeof this.options.migrate === 'object' ? this.options.migrate : {})
+    }
+
+    return this.db
   } catch (e) {
     this.db = undefined
-    this.awaitLock.release()
     throw e
+  } finally {
+    this.awaitLock.release()
   }
-  if (this.options.WAL) {
-    await new Promise((resolve, reject) => this.db.exec('PRAGMA journal_mode = WAL', (err) => err ? reject(err) : resolve()))
-  }
-  if (this.options.migrate) {
-    await this.migrate(typeof this.options.migrate === 'object' ? this.options.migrate : {})
-  }
-  this.awaitLock.release()
-  return this.db
 }
 
 DB.prototype.prepare = async function (sql, ...params) {
@@ -333,7 +343,7 @@ DB.prototype.updateWithBlackList = async function (table, data, where, blackList
  * @param {String} table Name of the table
  * @param {Object|Array} data a Object of data to set. Key is the name of the column. Can be an array of objects.
  * @param {undefined|Array} whiteList optional List of columns that only can be updated with "data"
- * @returns {Integer}
+ * @returns {Integer} The ID of the last inserted row
  */
 DB.prototype.insert = async function (table, data, whiteList) {
   return (await this.run(
@@ -347,7 +357,7 @@ DB.prototype.insert = async function (table, data, whiteList) {
  * @param {String} table Name of the table
  * @param {Object|Array} data a Object of data to set. Key is the name of the column. Can be an array of objects.
  * @param {undefined|Array} whiteBlackList optional List of columns that can not be updated with "data" (blacklist)
- * @returns {Integer}
+ * @returns {Integer} The ID of the last inserted row
  */
 DB.prototype.insertWithBlackList = async function (table, data, blackList) {
   return this.insert(table, data, await createWhiteListByBlackList.bind(this)(table, blackList))
@@ -359,7 +369,7 @@ DB.prototype.insertWithBlackList = async function (table, data, blackList) {
  * @param {String} table Name of the table
  * @param {Object|Array} data a Object of data to set. Key is the name of the column. Can be an array of objects.
  * @param {undefined|Array} whiteList optional List of columns that only can be updated with "data"
- * @returns {Integer}
+ * @returns {Integer} The ID of the last replaced row
  */
 DB.prototype.replace = async function (table, data, whiteList) {
   return (await this.run(
@@ -373,7 +383,7 @@ DB.prototype.replace = async function (table, data, whiteList) {
  * @param {String} table Name of the table
  * @param {Object|Array} data a Object of data to set. Key is the name of the column. Can be an array of objects.
  * @param {undefined|Array} whiteBlackList optional List of columns that can not be updated with "data" (blacklist)
- * @returns {Integer}
+ * @returns {Integer} The ID of the last replaced row
  */
 DB.prototype.replaceWithBlackList = async function (table, data, blackList) {
   return this.replace(table, data, await createWhiteListByBlackList.bind(this)(table, blackList))
@@ -418,6 +428,12 @@ function createInsertOrReplaceStatement (insertOrReplace, table, data, whiteList
  * Migrates database schema to the latest version
  */
 DB.prototype.migrate = async function ({ force, table = 'migrations', migrationsPath = './migrations' } = {}) {
+  if (!this.options.migrate) {
+    // We don't call `connection` if `options.migrate` is `true`, because in this case `connection` will call `migrate`
+    // which would lead into a dead-lock.
+    await this.connection()
+  }
+
   const exec = (query, ...bindParameters) => new Promise((resolve, reject) => this.db.exec(query, ...bindParameters, err => err ? reject(err) : resolve()))
   const run = (query, ...bindParameters) => new Promise((resolve, reject) => this.db.run(query, ...bindParameters, function (err) { err ? reject(err) : resolve(this) }))
   const query = (query, ...bindParameters) => new Promise((resolve, reject) => this.db.all(query, ...bindParameters, (err, rows) => err ? reject(err) : resolve(rows)))
