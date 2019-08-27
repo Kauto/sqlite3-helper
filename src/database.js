@@ -343,7 +343,7 @@ DB.prototype.updateWithBlackList = async function (table, data, where, blackList
  * @param {String} table Name of the table
  * @param {Object|Array} data a Object of data to set. Key is the name of the column. Can be an array of objects.
  * @param {undefined|Array} whiteList optional List of columns that only can be updated with "data"
- * @returns {Integer}
+ * @returns {Integer} The ID of the last inserted row
  */
 DB.prototype.insert = async function (table, data, whiteList) {
   return (await this.run(
@@ -357,7 +357,7 @@ DB.prototype.insert = async function (table, data, whiteList) {
  * @param {String} table Name of the table
  * @param {Object|Array} data a Object of data to set. Key is the name of the column. Can be an array of objects.
  * @param {undefined|Array} whiteBlackList optional List of columns that can not be updated with "data" (blacklist)
- * @returns {Integer}
+ * @returns {Integer} The ID of the last inserted row
  */
 DB.prototype.insertWithBlackList = async function (table, data, blackList) {
   return this.insert(table, data, await createWhiteListByBlackList.bind(this)(table, blackList))
@@ -369,7 +369,7 @@ DB.prototype.insertWithBlackList = async function (table, data, blackList) {
  * @param {String} table Name of the table
  * @param {Object|Array} data a Object of data to set. Key is the name of the column. Can be an array of objects.
  * @param {undefined|Array} whiteList optional List of columns that only can be updated with "data"
- * @returns {Integer}
+ * @returns {Integer} The ID of the last replaced row
  */
 DB.prototype.replace = async function (table, data, whiteList) {
   return (await this.run(
@@ -383,7 +383,7 @@ DB.prototype.replace = async function (table, data, whiteList) {
  * @param {String} table Name of the table
  * @param {Object|Array} data a Object of data to set. Key is the name of the column. Can be an array of objects.
  * @param {undefined|Array} whiteBlackList optional List of columns that can not be updated with "data" (blacklist)
- * @returns {Integer}
+ * @returns {Integer} The ID of the last replaced row
  */
 DB.prototype.replaceWithBlackList = async function (table, data, blackList) {
   return this.replace(table, data, await createWhiteListByBlackList.bind(this)(table, blackList))

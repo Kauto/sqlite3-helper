@@ -187,7 +187,7 @@ export interface DBInstance {
      * @param {String} table Name of the table
      * @param {Object|Array} data a Object of data to set. Key is the name of the column. Can be an array of objects.
      * @param {undefined|Array} whiteList optional List of columns that only can be updated with "data"
-     * @returns {Integer} The number of inserted rows
+     * @returns {Integer} The ID of the last inserted row
      */
     insert(table: string, data: DataObject | DataObject[], whiteList?: string[]): Promise<number>
 
@@ -197,7 +197,7 @@ export interface DBInstance {
      * @param {String} table Name of the table
      * @param {Object|Array} data a Object of data to set. Key is the name of the column. Can be an array of objects.
      * @param {undefined|Array} whiteBlackList optional List of columns that can not be updated with "data" (blacklist)
-     * @returns {Integer} The number of inserted rows
+     * @returns {Integer} The ID of the last inserted row
      */
     insertWithBlackList(table: string, data: DataObject | DataObject[], blackList?: string[]): Promise<number>
 
@@ -207,7 +207,7 @@ export interface DBInstance {
      * @param {String} table Name of the table
      * @param {Object|Array} data a Object of data to set. Key is the name of the column. Can be an array of objects.
      * @param {undefined|Array} whiteList optional List of columns that only can be updated with "data"
-     * @returns {Integer} The number of changed rows
+     * @returns {Integer} The ID of the last replaced row
      */
     replace(table: string, data: DataObject | DataObject[], whiteList?: string[]): Promise<number>
 
@@ -217,7 +217,7 @@ export interface DBInstance {
      * @param {String} table Name of the table
      * @param {Object|Array} data a Object of data to set. Key is the name of the column. Can be an array of objects.
      * @param {undefined|Array} whiteBlackList optional List of columns that can not be updated with "data" (blacklist)
-     * @returns {Integer} The number of changed rows
+     * @returns {Integer} The ID of the last replaced row
      */
     replaceWithBlackList(table: string, data: DataObject | DataObject[], blackList?: string[]): Promise<number>
 
