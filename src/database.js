@@ -36,6 +36,9 @@ DB.prototype.connection = async function () {
     return this.db
   }
   try {
+    if (this.options.fileMustExist && !fs.existsSync(this.options.path)) {
+      throw new Error("DB file doesn't exist: " + path.resolve(this.options.path))
+    }
     // create path if it doesn't exists
     mkdirp.sync(path.dirname(this.options.path))
     this.db = await new Promise((resolve, reject) => {
