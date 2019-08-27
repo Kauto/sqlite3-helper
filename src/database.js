@@ -44,7 +44,10 @@ DB.prototype.connection = async function () {
       mkdirp.sync(path.dirname(this.options.path))
     }
     this.db = await new Promise((resolve, reject) => {
-      const db = new sqlite3.Database(this.options.memory ? ':memory:' : this.options.path, (err) => err ? reject(err) : resolve(db))
+      const db = new sqlite3.Database(
+        this.options.memory ? ':memory:' : this.options.path,
+        this.options.readonly ? sqlite3.OPEN_READONLY : sqlite3.OPEN_READWRITE,
+        (err) => err ? reject(err) : resolve(db))
     })
 
     if (this.options.WAL) {
