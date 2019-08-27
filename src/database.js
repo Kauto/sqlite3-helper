@@ -428,6 +428,12 @@ function createInsertOrReplaceStatement (insertOrReplace, table, data, whiteList
  * Migrates database schema to the latest version
  */
 DB.prototype.migrate = async function ({ force, table = 'migrations', migrationsPath = './migrations' } = {}) {
+  if (!this.options.migrate) {
+    // We don't call `connection` if `options.migrate` is `true`, because in this case `connection` will call `migrate`
+    // which would lead into a dead-lock.
+    await this.connection()
+  }
+
   const exec = (query, ...bindParameters) => new Promise((resolve, reject) => this.db.exec(query, ...bindParameters, err => err ? reject(err) : resolve()))
   const run = (query, ...bindParameters) => new Promise((resolve, reject) => this.db.run(query, ...bindParameters, function (err) { err ? reject(err) : resolve(this) }))
   const query = (query, ...bindParameters) => new Promise((resolve, reject) => this.db.all(query, ...bindParameters, (err, rows) => err ? reject(err) : resolve(rows)))
