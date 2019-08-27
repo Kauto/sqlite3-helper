@@ -46,19 +46,21 @@ DB.prototype.connection = async function () {
     this.db = await new Promise((resolve, reject) => {
       const db = new sqlite3.Database(this.options.memory ? ':memory:' : this.options.path, (err) => err ? reject(err) : resolve(db))
     })
+
+    if (this.options.WAL) {
+      await new Promise((resolve, reject) => this.db.exec('PRAGMA journal_mode = WAL', (err) => err ? reject(err) : resolve()))
+    }
+    if (this.options.migrate) {
+      await this.migrate(typeof this.options.migrate === 'object' ? this.options.migrate : {})
+    }
+
+    return this.db
   } catch (e) {
     this.db = undefined
-    this.awaitLock.release()
     throw e
+  } finally {
+    this.awaitLock.release()
   }
-  if (this.options.WAL) {
-    await new Promise((resolve, reject) => this.db.exec('PRAGMA journal_mode = WAL', (err) => err ? reject(err) : resolve()))
-  }
-  if (this.options.migrate) {
-    await this.migrate(typeof this.options.migrate === 'object' ? this.options.migrate : {})
-  }
-  this.awaitLock.release()
-  return this.db
 }
 
 DB.prototype.prepare = async function (sql, ...params) {
