@@ -46,7 +46,7 @@ DB.prototype.connection = async function () {
     this.db = await new Promise((resolve, reject) => {
       const db = new sqlite3.Database(
         this.options.memory ? ':memory:' : this.options.path,
-        this.options.readonly ? sqlite3.OPEN_READONLY : sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE,
+        (this.options.readonly ? sqlite3.OPEN_READONLY : sqlite3.OPEN_READWRITE) | sqlite3.OPEN_CREATE,
         (err) => err ? reject(err) : resolve(db))
     })
 
