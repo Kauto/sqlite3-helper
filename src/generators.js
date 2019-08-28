@@ -16,7 +16,7 @@ DB.prototype.queryIterate = async function * (query, ...bindParameters) {
 }
 
 Statement.prototype.iterate = async function * (...params) {
-  let rows = []
+  const rows = []
   let loop = true
   let resolveCallback = () => {}
   this.orgStatement.each(...params, (err, row) => {
@@ -30,7 +30,7 @@ Statement.prototype.iterate = async function * (...params) {
     resolveCallback()
   })
   // eslint-disable-next-line no-unmodified-loop-condition
-  while (loop) {
+  while (loop || rows.length) {
     if (!rows.length) {
       await (new Promise(resolve => (resolveCallback = resolve)))
       resolveCallback = () => {}

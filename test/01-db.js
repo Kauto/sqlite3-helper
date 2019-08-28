@@ -1,5 +1,5 @@
-const {describe, it, afterEach} = require('mocha')
-const {expect} = require('chai')
+const { describe, it, afterEach } = require('mocha')
+const { expect } = require('chai')
 const DB = require('../src/generators')
 const fs = require('fs')
 const path = require('path')
@@ -47,14 +47,14 @@ describe('Database Basics', function () {
     db = new DB({
       migrate: false
     })
-    expect(await db.query('SELECT ? as `1` UNION SELECT ? as `1`', 1, 2)).to.deep.equal([{'1': 1}, {'1': 2}])
+    expect(await db.query('SELECT ? as `1` UNION SELECT ? as `1`', 1, 2)).to.deep.equal([{ 1: 1 }, { 1: 2 }])
   })
 
   it('should return first row with queryFirstRow', async function () {
     db = new DB({
       migrate: false
     })
-    expect(await db.queryFirstRow('SELECT ? as `1` UNION SELECT ? as `1`', 1, 2)).to.deep.equal({'1': 1})
+    expect(await db.queryFirstRow('SELECT ? as `1` UNION SELECT ? as `1`', 1, 2)).to.deep.equal({ 1: 1 })
   })
 
   it('should return first cell with queryFirstCell', async function () {
@@ -76,8 +76,8 @@ describe('Database Basics', function () {
     db = new DB({
       migrate: false
     })
-    let result = []
-    for await (let v of db.queryIterate('SELECT ? as `1` UNION SELECT ? as `1`', 1, 2)) {
+    const result = []
+    for await (const v of db.queryIterate('SELECT ? as `1` UNION SELECT ? as `1`', 1, 2)) {
       result.push(v['1'])
     }
     expect(result).to.deep.equal([1, 2])
@@ -87,7 +87,7 @@ describe('Database Basics', function () {
     db = new DB({
       migrate: false
     })
-    let result = []
+    const result = []
     await db.each('SELECT ? as `1` UNION SELECT ? as `1`', 1, 2, row => {
       result.push(row['1'])
     })
@@ -105,7 +105,7 @@ describe('Database Basics', function () {
     db = new DB({
       migrate: false
     })
-    expect(await db.queryKeyAndColumn('1', '2', 'SELECT ? as `1`, ? as `2` UNION SELECT ? as `1`, ? as `2`', 1, 2, 3, 4)).to.deep.equal({1: 2, 3: 4})
+    expect(await db.queryKeyAndColumn('1', '2', 'SELECT ? as `1`, ? as `2` UNION SELECT ? as `1`, ? as `2`', 1, 2, 3, 4)).to.deep.equal({ 1: 2, 3: 4 })
   })
 
   it('should migrate files', async function () {

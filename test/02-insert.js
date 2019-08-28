@@ -1,5 +1,5 @@
-const {describe, it, afterEach} = require('mocha')
-const {expect} = require('chai')
+const { describe, it, afterEach } = require('mocha')
+const { expect } = require('chai')
 const DB = require('../src/generators')
 const fs = require('fs')
 const path = require('path')
