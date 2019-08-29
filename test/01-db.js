@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 const { describe, it, afterEach } = require('mocha')
 const { expect } = require('chai')
 const DB = require('../src/generators')
@@ -21,9 +22,9 @@ describe('Database Basics', function () {
       migrate: false
     })
     await db.connection()
-    db.close()
+    await db.close()
     const result = fs.existsSync(path.resolve(appRoot, './data/sqlite3.db'))
-    // eslint-disable-next-line no-unused-expressions
+
     expect(result).to.be.true
   })
 
@@ -31,7 +32,7 @@ describe('Database Basics', function () {
     db = new DB({
       migrate: false
     })
-    // eslint-disable-next-line no-unused-expressions
+
     expect(await db.run('SELECT 1')).to.not.throw
   })
 
@@ -39,7 +40,7 @@ describe('Database Basics', function () {
     db = new DB({
       migrate: false
     })
-    // eslint-disable-next-line no-unused-expressions
+
     expect(await db.exec('SELECT 1; SELECT 2')).to.not.throw
   })
 
@@ -68,7 +69,7 @@ describe('Database Basics', function () {
     db = new DB({
       migrate: false
     })
-    // eslint-disable-next-line no-unused-expressions
+
     expect(await db.queryFirstCell('SELECT 1 WHERE 1=0')).to.be.undefined
   })
 

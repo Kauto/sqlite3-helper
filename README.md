@@ -50,7 +50,7 @@ const DB = require('sqlite3-helper/no-generators');
 ```
 
 ## One global instance
-A normal, simple application is mostly working with only one database. To make the class managment more easy, this library does the access-control for you - mainly as a singleton. (But you can create a new instance to access other databases.)
+A normal, simple application is mostly working with only one database. To make the class management more easy, this library does the access-control for you - mainly as a singleton. (But you can create a new instance to access other databases.)
 
 The database loads lazy. Only when it's used for the first time, the database is read from the file, the migration is started and the journal-mode WAL is set. The default directory of the database is `'./data/sqlite3.db'`. 
 
@@ -63,11 +63,11 @@ const DB = require('sqlite3-helper');
 DB({
   path: './data/sqlite3.db', // this is the default
   memory: false, // create a db only in memory
-  readonly: false, // read only
+  readOnly: false, // read only
   fileMustExist: false, // throw error if database not exists
   WAL: true, // automatically enable 'PRAGMA journal_mode = WAL'
   migrate: {  // disable completely by setting `migrate: false`
-    force: false, // set to 'last' to automatically reapply the last migration-file
+    force: false, // set to true to automatically reapply the last migration-file
     table: 'migration', // name of the database table that is used to keep track
     migrationsPath: './migrations' // path of the migration-files
   }
@@ -213,7 +213,7 @@ router.patch('/user/:id', bodyParser.json(), async function (req, res, next) {
 
 The migration in this library mimics the migration system of the excellent [sqlite](https://www.npmjs.com/package/sqlite) by Kriasoft. 
 
-To use this feature you have to create a `migrations`-directory in your root. Inside you create `sql`-files that are seperated in a up- and a down-part:
+To use this feature you have to create a `migrations`-directory in your root. Inside you create `sql`-files that are separated in a up- and a down-part:
 
 ##### `migrations/001-initial-schema.sql`
 
@@ -244,7 +244,7 @@ DROP INDEX Post_ix_categoryId;
 The files need to be numbered. They are automatically executed before the first use of the database.
 
 **NOTE**: For the development environment, while working on the database schema, you may want to set
-`force: 'last'` (default `false`) that will force the migration API to rollback and re-apply the latest migration over again each time when Node.js app launches. See "Global Instance".
+`force: true` (default `false`) that will force the migration API to rollback and re-apply the latest migration over again each time when Node.js app launches. See "Global Instance".
 
 ## License
 

@@ -24,7 +24,10 @@ function DB (options = {}) {
   this.options = Object.assign({
     path: dbFile,
     migrate: true,
-    WAL: true
+    WAL: true,
+    fileMustExist: false,
+    readOnly: false,
+    memory: false
   }, options)
   this.awaitLock = new AwaitLock()
 }
@@ -46,7 +49,7 @@ DB.prototype.connection = async function () {
     this.db = await new Promise((resolve, reject) => {
       const db = new sqlite3.Database(
         this.options.memory ? ':memory:' : this.options.path,
-        (this.options.readonly ? sqlite3.OPEN_READONLY : sqlite3.OPEN_READWRITE) | sqlite3.OPEN_CREATE,
+        this.options.readOnly || this.options.readonly ? sqlite3.OPEN_READONLY : sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE,
         (err) => err ? reject(err) : resolve(db))
     })
 
@@ -427,7 +430,7 @@ function createInsertOrReplaceStatement (insertOrReplace, table, data, whiteList
 /**
  * Migrates database schema to the latest version
  */
-DB.prototype.migrate = async function ({ force, table = 'migrations', migrationsPath = './migrations' } = {}) {
+DB.prototype.migrate = async function ({ force = false, table = 'migrations', migrationsPath = './migrations' } = {}) {
   if (!this.options.migrate) {
     // We don't call `connection` if `options.migrate` is `true`, because in this case `connection` will call `migrate`
     // which would lead into a dead-lock.
@@ -483,11 +486,11 @@ DB.prototype.migrate = async function ({ force, table = 'migrations', migrations
   )
 
   // Undo migrations that exist only in the database but not in files,
-  // also undo the last migration if the `force` option was set to `last`.
+  // also undo the last migration if the `force` option was set.
   const lastMigration = migrations[migrations.length - 1]
   for (const migration of dbMigrations.slice().sort((a, b) => Math.sign(b.id - a.id))) {
     if (!migrations.some(x => x.id === migration.id) ||
-        (force === 'last' && migration.id === lastMigration.id)) {
+        (force && migration.id === lastMigration.id)) {
       await exec('BEGIN')
       try {
         await exec(migration.down)
