@@ -14,8 +14,8 @@ export type DBOptions = {
     path?: string
     /** Whether to create a db only in memory. Default: false */
     memory?: boolean
-    /** Whether to open database readonly. Default: false */
-    readonly?: boolean
+    /** Whether to open database read-only. Default: false */
+    readOnly?: boolean
     /** Whether to throw error if database not exists. Default: false */
     fileMustExist?: boolean
     /** Whether to automatically enable 'PRAGMA journal_mode = WAL'. Default: true */
