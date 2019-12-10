@@ -2,7 +2,7 @@ const sqlite3 = require('sqlite3')
 const path = require('path')
 const fs = require('fs')
 const mkdirp = require('mkdirp')
-const AwaitLock = require('await-lock')
+const AwaitLock = require('await-lock').default
 const appRoot = require('app-root-path').path
 const Statement = require('./statement')
 
