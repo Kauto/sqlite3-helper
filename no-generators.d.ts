@@ -253,4 +253,5 @@ interface Statement {
     each<RowData = DataObject>(...bindParameters: any[]): Promise<number>
 }
 
-export default function DB(options?: DBOptions): DBInstance
+declare const DB: { new(options?: DBOptions): DBInstance } & ((options?: DBOptions) => DBInstance)
+export default DB

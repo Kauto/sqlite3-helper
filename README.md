@@ -86,6 +86,21 @@ const DB = require('sqlite3-helper');
 })()
 ```
 
+## Multiple instances
+If you need access to more than one database, you can use `DB` as a constructor (calling `new DB(...)` instead of just `DB(...)`):
+
+```js
+const DB = require('sqlite3-helper');
+
+const db1 = new DB({ path: './data/first-db.sqlite' })
+const db2 = new DB({ path: './data/second-db.sqlite' })
+
+(async ()=>{
+  let row = await db1.queryFirstRow('SELECT * FROM users WHERE id=?', userId);
+  console.log(row.firstName, row.lastName, row.email);
+})()
+```
+
 ## New Functions
 This class implements shorthand methods for [sqlite3](https://www.npmjs.com/package/sqlite3).
 
