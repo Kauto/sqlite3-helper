@@ -23,4 +23,5 @@ export interface Statement extends noGenerators.Statement {
     iterate<RowData = DataObject>(...bindParameters: any[]): Iterable<RowData>
 }
 
-export default function DB(options?: DBOptions): DBInstance
+declare const DB: { new(options?: DBOptions): DBInstance } & ((options?: DBOptions) => DBInstance)
+export default DB
