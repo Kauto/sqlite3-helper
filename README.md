@@ -4,7 +4,7 @@ A promise based wrapper library for the work with [sqlite3](https://www.npmjs.co
 
 ## How to install
 
-This library uses [sqlite3](https://www.npmjs.com/package/sqlite3) as peer dependency. You need to install it youself. So to install run
+Since version two this library uses [sqlite3](https://www.npmjs.com/package/sqlite3) as peer dependency. You need to install it yourself. To get both run
 
 ```bash
 npm i sqlite3-helper sqlite3
@@ -26,7 +26,7 @@ const DB = require('sqlite3-helper');
 //...
 ```
 
-## Node version < 10
+### Node version < 10
 
 In addition if you work with a node version < 10 (having no support for `async function *` async generator functions) use `sqlite3-helper/no-generators`:
 
