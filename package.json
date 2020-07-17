@@ -20,22 +20,25 @@
     "helper"
   ],
   "dependencies": {
+    "@types/sqlite3": "^3.1.6",
     "app-root-path": "^3.0.0",
     "await-lock": "^2.0.1",
-    "mkdirp": "^1.0.4",
-    "sqlite3": "^4.2.0"
+    "mkdirp": "^1.0.4"
   },
   "devDependencies": {
-    "@types/sqlite3": "^3.1.6",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "cross-env": "^7.0.2",
-    "eslint": "^7.3.1",
+    "eslint": "^7.4.0",
     "eslint-config-standard": "^14.1.1",
     "eslint-plugin-import": "^2.22.0",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
-    "mocha": "^8.0.1"
+    "mocha": "^8.0.1",
+    "sqlite3": "*"
+  },
+  "peerDependencies": {
+    "sqlite3": "^4.2.0 || ^5.0.0"
   }
 }

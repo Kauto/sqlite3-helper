@@ -4,10 +4,38 @@ A promise based wrapper library for the work with [sqlite3](https://www.npmjs.co
 
 ## How to install
 
-Like always
+This library uses [sqlite3](https://www.npmjs.com/package/sqlite3) as peer dependency. You need to install it youself. So to install run
 
 ```bash
-npm i sqlite3-helper
+npm i sqlite3-helper sqlite3
+```
+```js
+const DB = require('sqlite3-helper');
+//...
+```
+
+### Node version < 11
+
+If you work with a node version < 11 you need to install the older version of sqlite3:
+
+```bash
+npm i sqlite3-helper sqlite3@4
+```
+```js
+const DB = require('sqlite3-helper');
+//...
+```
+
+## Node version < 10
+
+In addition if you work with a node version < 10 (having no support for `async function *` async generator functions) use `sqlite3-helper/no-generators`:
+
+```bash
+npm i sqlite3-helper sqlite3@4
+```
+```js
+const DB = require('sqlite3-helper/no-generators');
+// ...
 ```
 
 ## How to use
@@ -38,16 +66,6 @@ CREATE TABLE `users` (
 DROP TABLE IF EXISTS `users`;
 ```
 And that's it!
-
-## Node version < 10
-
-If you work with a node version < 10 (having no support for `async function *` async generator functions) use `sqlite3-helper/no-generators` instead:
-
-```js
-const DB = require('sqlite3-helper/no-generators');
-
-// ...
-```
 
 ## One global instance
 A normal, simple application is mostly working with only one database. To make the class management more easy, this library does the access-control for you - mainly as a singleton. (But you can create a new instance to access other databases.)
