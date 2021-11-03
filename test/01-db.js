@@ -4,7 +4,6 @@ const { expect } = require('chai')
 const DB = require('../src/generators')
 const fs = require('fs')
 const path = require('path')
-const appRoot = require('app-root-path').path
 let db = null
 
 describe('Database Basics', function () {
@@ -12,8 +11,8 @@ describe('Database Basics', function () {
     db && await db.close()
     db = null
     try {
-      fs.unlinkSync(path.resolve(appRoot, './data/sqlite3.db'))
-      fs.rmdirSync(path.resolve(appRoot, './data'))
+      fs.unlinkSync(path.resolve(process.cwd(), './data/sqlite3.db'))
+      fs.rmdirSync(path.resolve(process.cwd(), './data'))
     } catch (e) {}
   })
 
@@ -23,7 +22,7 @@ describe('Database Basics', function () {
     })
     await db.connection()
     await db.close()
-    const result = fs.existsSync(path.resolve(appRoot, './data/sqlite3.db'))
+    const result = fs.existsSync(path.resolve(process.cwd(), './data/sqlite3.db'))
 
     expect(result).to.be.true
   })

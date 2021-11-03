@@ -8,7 +8,6 @@ const { expect } = chai
 const DB = require('../src/generators')
 const fs = require('fs')
 const path = require('path')
-const appRoot = require('app-root-path').path
 let db = null
 
 describe('Database Connection Mode Tests', function () {
@@ -16,8 +15,8 @@ describe('Database Connection Mode Tests', function () {
     db && await db.close()
     db = null
     try {
-      fs.unlinkSync(path.resolve(appRoot, './data/sqlite3.db'))
-      fs.rmdirSync(path.resolve(appRoot, './data'))
+      fs.unlinkSync(path.resolve(process.cwd(), './data/sqlite3.db'))
+      fs.rmdirSync(path.resolve(process.cwd(), './data'))
     } catch (e) {}
   })
 
@@ -61,7 +60,7 @@ describe('Database Connection Mode Tests', function () {
     await db.connection()
     await db.close()
     // no file was generated
-    const result = fs.existsSync(path.resolve(appRoot, './data/sqlite3.db'))
+    const result = fs.existsSync(path.resolve(process.cwd(), './data/sqlite3.db'))
     expect(result).to.be.false
   })
 

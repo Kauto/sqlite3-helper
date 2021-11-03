@@ -1,46 +1,46 @@
-import sqlite3 from 'sqlite3'
+import sqlite3 from "sqlite3";
 
 export type MigrationOptions = {
     /** Whether to set to 'last' to automatically reapply the last migration-file. Default: false */
-    force?: 'last' | false
+    force?: "last" | false;
     /** The name of the database table that is used to keep track. Default: 'migration' */
-    table?: string
+    table?: string;
     /** The path of the migration files. Default: './migrations' */
-    migrationsPath?: string
-}
+    migrationsPath?: string;
+};
 
 export type DBOptions = {
     /** Path to sqlite database file. Default: './data/sqlite3.db' */
-    path?: string
+    path?: string;
     /** Whether to create a db only in memory. Default: false */
-    memory?: boolean
+    memory?: boolean;
     /** Whether to open database read-only. Default: false */
-    readOnly?: boolean
+    readOnly?: boolean;
     /** Whether to throw error if database not exists. Default: false */
-    fileMustExist?: boolean
+    fileMustExist?: boolean;
     /** Whether to automatically enable 'PRAGMA journal_mode = WAL'. Default: true */
-    WAL?: boolean
+    WAL?: boolean;
     /** Migration options. Disable completely by setting `migrate: false` */
-    migrate?: MigrationOptions | false
-}
+    migrate?: MigrationOptions | false;
+};
 
-export type DataObject = { [key:string]: any }
+export type DataObject = { [key: string]: any };
 
 /**
  * Specifies a where clause.
- * 
+ *
  *   - Either a string containing the value to use as ID that will be translated to ['id = ?', id]
  *   - Or an array with a string and the replacements for ? after that. F.e. ['id > ? && name = ?', id, name].
  *   - Or an object with key values. F.e. {id: params.id}. Or simply an ID that will be translated to ['id = ?', id]
  */
-export type WhereClause = string | any[] | DataObject
+export type WhereClause<T = DataObject> = string | any[] | Partial<T>;
 
 export interface DBInstance {
-    connection(): Promise<sqlite3.Database>
+    connection(): Promise<sqlite3.Database>;
 
-    prepare(sql: string, ...params: any[]): Promise<Statement>
+    prepare(sql: string, ...params: any[]): Promise<Statement>;
 
-    exec(sql: string): Promise<void>
+    exec(sql: string): Promise<void>;
 
     //DB.prototype.pragma = function (source, simplify = false) {
 
@@ -48,7 +48,7 @@ export interface DBInstance {
 
     //DB.prototype.register = function (...args) {
 
-    close(): Promise<void>
+    close(): Promise<void>;
 
     //DB.prototype.defaultSafeIntegers = function (toggleState) {
 
@@ -65,7 +65,7 @@ export interface DBInstance {
      * @param {any} bindParameters You can specify bind parameters @see https://github.com/JoshuaWise/better-sqlite3/wiki/API#binding-parameters
      * @returns {object}
      */
-    run(query: string, ...bindParameters: any[]): Promise<sqlite3.RunResult>
+    run(query: string, ...bindParameters: any[]): Promise<sqlite3.RunResult>;
 
     /**
      * Returns all values of a query
@@ -75,7 +75,7 @@ export interface DBInstance {
      * @param {any} bindParameters You can specify bind parameters @see https://github.com/JoshuaWise/better-sqlite3/wiki/API#binding-parameters
      * @returns {array}
      */
-    query<RowData = DataObject>(query: string, ...bindParameters: any[]): Promise<RowData[]>
+    query<RowData = DataObject>(query: string, ...bindParameters: any[]): Promise<RowData[]>;
 
     /**
      * Similar to .query(), but instead of returning every row together, an iterator is returned so you can retrieve the rows one by one.
@@ -85,7 +85,7 @@ export interface DBInstance {
      * @param {any} bindParameters You can specify bind parameters @see https://github.com/JoshuaWise/better-sqlite3/wiki/API#binding-parameters
      * @returns {Iterator}
      */
-    queryIterate<RowData = DataObject>(query: string, ...bindParameters: any[]): Iterable<RowData>
+    queryIterate<RowData = DataObject>(query: string, ...bindParameters: any[]): Iterable<RowData>;
 
     /**
      * Returns the values of the first row of the query-result
@@ -95,7 +95,7 @@ export interface DBInstance {
      * @param {any} bindParameters You can specify bind parameters @see https://github.com/JoshuaWise/better-sqlite3/wiki/API#binding-parameters
      * @returns {Object|null}
      */
-    queryFirstRow<RowData = DataObject>(query: string, ...bindParameters: any[]): Promise<RowData|null>
+    queryFirstRow<RowData = DataObject>(query: string, ...bindParameters: any[]): Promise<RowData | null>;
 
     /**
      * Returns the values of the first row of the query-result
@@ -107,7 +107,7 @@ export interface DBInstance {
      * @param {any} bindParameters You can specify bind parameters @see https://github.com/JoshuaWise/better-sqlite3/wiki/API#binding-parameters
      * @returns {Object}
      */
-    queryFirstRowObject<RowData = DataObject>(query: string, ...bindParameters: any[]): Promise<RowData|{}>
+    queryFirstRowObject<RowData = DataObject>(query: string, ...bindParameters: any[]): Promise<RowData | {}>;
 
     /**
      * Returns the value of the first column in the first row of the query-result
@@ -116,7 +116,7 @@ export interface DBInstance {
      * @param {any} bindParameters You can specify bind parameters @see https://github.com/JoshuaWise/better-sqlite3/wiki/API#binding-parameters
      * @returns {any}
      */
-    queryFirstCell<CellType = any>(query: string, ...bindParameters: any[]): Promise<CellType|undefined>
+    queryFirstCell<CellType = any>(query: string, ...bindParameters: any[]): Promise<CellType | undefined>;
 
     /**
      * Calls a callback for every row
@@ -126,17 +126,93 @@ export interface DBInstance {
      * @param {any} callback the callback that is called
      * @returns {integer} count
      */
-    each<RowData = DataObject>(query: string, p1: any, callback: (row: RowData) => void): Promise<number>
-    each<RowData = DataObject>(query: string, p1: any, p2: any, callback: (row: RowData) => void): Promise<number>
-    each<RowData = DataObject>(query: string, p1: any, p2: any, p3: any, callback: (row: RowData) => void): Promise<number>
-    each<RowData = DataObject>(query: string, p1: any, p2: any, p3: any, p4: any, callback: (row: RowData) => void): Promise<number>
-    each<RowData = DataObject>(query: string, p1: any, p2: any, p3: any, p4: any, p5: any, callback: (row: RowData) => void): Promise<number>
-    each<RowData = DataObject>(query: string, p1: any, p2: any, p3: any, p4: any, p5: any, p6: any, callback: (row: RowData) => void): Promise<number>
-    each<RowData = DataObject>(query: string, p1: any, p2: any, p3: any, p4: any, p5: any, p6: any, p7: any, callback: (row: RowData) => void): Promise<number>
-    each<RowData = DataObject>(query: string, p1: any, p2: any, p3: any, p4: any, p5: any, p6: any, p7: any, p8: any, callback: (row: RowData) => void): Promise<number>
-    each<RowData = DataObject>(query: string, p1: any, p2: any, p3: any, p4: any, p5: any, p6: any, p7: any, p8: any, p9: any, callback: (row: RowData) => void): Promise<number>
-    each<RowData = DataObject>(query: string, p1: any, p2: any, p3: any, p4: any, p5: any, p6: any, p7: any, p8: any, p9: any, p10: any, callback: (row: RowData) => void): Promise<number>
-    each<RowData = DataObject>(query: string, ...bindParameters: any[]): Promise<number>
+    each<RowData = DataObject>(query: string, p1: any, callback: (row: RowData) => void): Promise<number>;
+    each<RowData = DataObject>(query: string, p1: any, p2: any, callback: (row: RowData) => void): Promise<number>;
+    each<RowData = DataObject>(
+        query: string,
+        p1: any,
+        p2: any,
+        p3: any,
+        callback: (row: RowData) => void
+    ): Promise<number>;
+    each<RowData = DataObject>(
+        query: string,
+        p1: any,
+        p2: any,
+        p3: any,
+        p4: any,
+        callback: (row: RowData) => void
+    ): Promise<number>;
+    each<RowData = DataObject>(
+        query: string,
+        p1: any,
+        p2: any,
+        p3: any,
+        p4: any,
+        p5: any,
+        callback: (row: RowData) => void
+    ): Promise<number>;
+    each<RowData = DataObject>(
+        query: string,
+        p1: any,
+        p2: any,
+        p3: any,
+        p4: any,
+        p5: any,
+        p6: any,
+        callback: (row: RowData) => void
+    ): Promise<number>;
+    each<RowData = DataObject>(
+        query: string,
+        p1: any,
+        p2: any,
+        p3: any,
+        p4: any,
+        p5: any,
+        p6: any,
+        p7: any,
+        callback: (row: RowData) => void
+    ): Promise<number>;
+    each<RowData = DataObject>(
+        query: string,
+        p1: any,
+        p2: any,
+        p3: any,
+        p4: any,
+        p5: any,
+        p6: any,
+        p7: any,
+        p8: any,
+        callback: (row: RowData) => void
+    ): Promise<number>;
+    each<RowData = DataObject>(
+        query: string,
+        p1: any,
+        p2: any,
+        p3: any,
+        p4: any,
+        p5: any,
+        p6: any,
+        p7: any,
+        p8: any,
+        p9: any,
+        callback: (row: RowData) => void
+    ): Promise<number>;
+    each<RowData = DataObject>(
+        query: string,
+        p1: any,
+        p2: any,
+        p3: any,
+        p4: any,
+        p5: any,
+        p6: any,
+        p7: any,
+        p8: any,
+        p9: any,
+        p10: any,
+        callback: (row: RowData) => void
+    ): Promise<number>;
+    each<RowData = DataObject>(query: string, ...bindParameters: any[]): Promise<number>;
 
     /**
      * Returns an Array that only contains the values of the specified column
@@ -146,7 +222,7 @@ export interface DBInstance {
      * @param {any} bindParameters You can specify bind parameters @see https://github.com/JoshuaWise/better-sqlite3/wiki/API#binding-parameters
      * @returns {array}
      */
-    queryColumn<ColumnType = any>(column: string, query: string, ...bindParameters: any[]): Promise<ColumnType[]>
+    queryColumn<ColumnType = any>(column: string, query: string, ...bindParameters: any[]): Promise<ColumnType[]>;
 
     /**
      * Returns a Object that get it key-value-combination from the result of the query
@@ -157,7 +233,12 @@ export interface DBInstance {
      * @param {any} bindParameters You can specify bind parameters @see https://github.com/JoshuaWise/better-sqlite3/wiki/API#binding-parameters
      * @returns {object}
      */
-    queryKeyAndColumn<ValueColumnType = any>(key: string, column: string, query: string, ...bindParameters: any[]): Promise<{[key:string]: ValueColumnType}>
+    queryKeyAndColumn<ValueColumnType = any>(
+        key: string,
+        column: string,
+        query: string,
+        ...bindParameters: any[]
+    ): Promise<{ [key: string]: ValueColumnType }>;
 
     /**
      * Create an update statement; create more complex one with exec yourself.
@@ -168,7 +249,12 @@ export interface DBInstance {
      * @param {undefined|Array} whiteList optional List of columns that can only be updated with "data"
      * @returns {Integer} The number of updated rows
      */
-    update<RowData = DataObject>(table: string, data: Partial<RowData>, where: WhereClause, whiteList?: string[]): Promise<number>
+    update<RowData = DataObject>(
+        table: string,
+        data: Partial<RowData>,
+        where: WhereClause<RowData>,
+        whiteList?: string[]
+    ): Promise<number>;
 
     /**
      * Create an update statement; create more complex one with exec yourself.
@@ -179,7 +265,12 @@ export interface DBInstance {
      * @param {undefined|Array} whiteBlackList optional List of columns that can not be updated with "data" (blacklist)
      * @returns {Integer} The number of updated rows
      */
-    updateWithBlackList(table: string, data: DataObject, where: WhereClause, blackList?: string[]): Promise<number>
+    updateWithBlackList<RowData = DataObject>(
+        table: string,
+        data: Partial<RowData>,
+        where: WhereClause<RowData>,
+        blackList?: string[]
+    ): Promise<number>;
 
     /**
      * Create an insert statement; create more complex one with exec yourself.
@@ -189,7 +280,7 @@ export interface DBInstance {
      * @param {undefined|Array} whiteList optional List of columns that only can be updated with "data"
      * @returns {Integer} The ID of the last inserted row
      */
-    insert(table: string, data: DataObject | DataObject[], whiteList?: string[]): Promise<number>
+    insert<RowData = DataObject>(table: string, data: Partial<RowData> | Partial<RowData>[], whiteList?: string[]): Promise<number>;
 
     /**
      * Create an insert statement; create more complex one with exec yourself.
@@ -199,7 +290,11 @@ export interface DBInstance {
      * @param {undefined|Array} whiteBlackList optional List of columns that can not be updated with "data" (blacklist)
      * @returns {Integer} The ID of the last inserted row
      */
-    insertWithBlackList(table: string, data: DataObject | DataObject[], blackList?: string[]): Promise<number>
+    insertWithBlackList<RowData = DataObject>(
+        table: string,
+        data: Partial<RowData> | Partial<RowData>[],
+        blackList?: string[]
+    ): Promise<number>;
 
     /**
      * Create an replace statement; create more complex one with exec yourself.
@@ -209,7 +304,11 @@ export interface DBInstance {
      * @param {undefined|Array} whiteList optional List of columns that only can be updated with "data"
      * @returns {Integer} The ID of the last replaced row
      */
-    replace(table: string, data: DataObject | DataObject[], whiteList?: string[]): Promise<number>
+    replace<RowData = DataObject>(
+        table: string,
+        data: Partial<RowData> | Partial<RowData>[],
+        whiteList?: string[]
+    ): Promise<number>;
 
     /**
      * Create an replace statement; create more complex one with exec yourself.
@@ -219,39 +318,109 @@ export interface DBInstance {
      * @param {undefined|Array} whiteBlackList optional List of columns that can not be updated with "data" (blacklist)
      * @returns {Integer} The ID of the last replaced row
      */
-    replaceWithBlackList(table: string, data: DataObject | DataObject[], blackList?: string[]): Promise<number>
+    replaceWithBlackList<RowData = DataObject>(
+        table: string,
+        data: Partial<RowData> | Partial<RowData>[],
+        blackList?: string[]
+    ): Promise<number>;
+
+    /**
+     * Create a delete statement; create more complex one with exec yourself.
+     *
+     * @param {String} table required. Name of the table
+     * @param {String|Array|Object} where required. array with a string and the replacements for ? after that. F.e. ['id > ? && name = ?', id, name]. Or an object with key values. F.e. {id: params.id}. Or simply an ID that will be translated to ['id = ?', id]
+     * @returns {Integer} Number of changed rows
+     */
+    delete<RowData = DataObject>(table: string, where: WhereClause<RowData>): Promise<number>;
 
     /**
      * Migrates database schema to the latest version
      */
-    migrate(options?: MigrationOptions): Promise<void>
+    migrate(options?: MigrationOptions): Promise<void>;
 }
 
 interface Statement {
-    bind(...params: any[]): Promise<void>
+    bind(...params: any[]): Promise<void>;
 
-    reset(): Promise<void>
+    reset(): Promise<void>;
 
-    finalize(): Promise<void>
+    finalize(): Promise<void>;
 
-    run(...params: any[]): Promise<sqlite3.RunResult>
+    run(...params: any[]): Promise<sqlite3.RunResult>;
 
-    get<RowData = DataObject>(...params: any[]): Promise<RowData | undefined>
+    get<RowData = DataObject>(...params: any[]): Promise<RowData | undefined>;
 
-    all<RowData = DataObject>(...params: any[]): Promise<RowData[]>
+    all<RowData = DataObject>(...params: any[]): Promise<RowData[]>;
 
-    each<RowData = DataObject>(p1: any, callback: (row: RowData) => void): Promise<number>
-    each<RowData = DataObject>(p1: any, p2: any, callback: (row: RowData) => void): Promise<number>
-    each<RowData = DataObject>(p1: any, p2: any, p3: any, callback: (row: RowData) => void): Promise<number>
-    each<RowData = DataObject>(p1: any, p2: any, p3: any, p4: any, callback: (row: RowData) => void): Promise<number>
-    each<RowData = DataObject>(p1: any, p2: any, p3: any, p4: any, p5: any, callback: (row: RowData) => void): Promise<number>
-    each<RowData = DataObject>(p1: any, p2: any, p3: any, p4: any, p5: any, p6: any, callback: (row: RowData) => void): Promise<number>
-    each<RowData = DataObject>(p1: any, p2: any, p3: any, p4: any, p5: any, p6: any, p7: any, callback: (row: RowData) => void): Promise<number>
-    each<RowData = DataObject>(p1: any, p2: any, p3: any, p4: any, p5: any, p6: any, p7: any, p8: any, callback: (row: RowData) => void): Promise<number>
-    each<RowData = DataObject>(p1: any, p2: any, p3: any, p4: any, p5: any, p6: any, p7: any, p8: any, p9: any, callback: (row: RowData) => void): Promise<number>
-    each<RowData = DataObject>(p1: any, p2: any, p3: any, p4: any, p5: any, p6: any, p7: any, p8: any, p9: any, p10: any, callback: (row: RowData) => void): Promise<number>
-    each<RowData = DataObject>(...bindParameters: any[]): Promise<number>
+    each<RowData = DataObject>(p1: any, callback: (row: RowData) => void): Promise<number>;
+    each<RowData = DataObject>(p1: any, p2: any, callback: (row: RowData) => void): Promise<number>;
+    each<RowData = DataObject>(p1: any, p2: any, p3: any, callback: (row: RowData) => void): Promise<number>;
+    each<RowData = DataObject>(p1: any, p2: any, p3: any, p4: any, callback: (row: RowData) => void): Promise<number>;
+    each<RowData = DataObject>(
+        p1: any,
+        p2: any,
+        p3: any,
+        p4: any,
+        p5: any,
+        callback: (row: RowData) => void
+    ): Promise<number>;
+    each<RowData = DataObject>(
+        p1: any,
+        p2: any,
+        p3: any,
+        p4: any,
+        p5: any,
+        p6: any,
+        callback: (row: RowData) => void
+    ): Promise<number>;
+    each<RowData = DataObject>(
+        p1: any,
+        p2: any,
+        p3: any,
+        p4: any,
+        p5: any,
+        p6: any,
+        p7: any,
+        callback: (row: RowData) => void
+    ): Promise<number>;
+    each<RowData = DataObject>(
+        p1: any,
+        p2: any,
+        p3: any,
+        p4: any,
+        p5: any,
+        p6: any,
+        p7: any,
+        p8: any,
+        callback: (row: RowData) => void
+    ): Promise<number>;
+    each<RowData = DataObject>(
+        p1: any,
+        p2: any,
+        p3: any,
+        p4: any,
+        p5: any,
+        p6: any,
+        p7: any,
+        p8: any,
+        p9: any,
+        callback: (row: RowData) => void
+    ): Promise<number>;
+    each<RowData = DataObject>(
+        p1: any,
+        p2: any,
+        p3: any,
+        p4: any,
+        p5: any,
+        p6: any,
+        p7: any,
+        p8: any,
+        p9: any,
+        p10: any,
+        callback: (row: RowData) => void
+    ): Promise<number>;
+    each<RowData = DataObject>(...bindParameters: any[]): Promise<number>;
 }
 
-declare const DB: { new(options?: DBOptions): DBInstance } & ((options?: DBOptions) => DBInstance)
-export default DB
+declare const DB: { new (options?: DBOptions): DBInstance } & ((options?: DBOptions) => DBInstance);
+export default DB;
